@@ -10,9 +10,14 @@ import UIKit
 
 class MemoTableViewController: UITableViewController {
 
-    var memos=[
-       "blue","red","pink"
-    ]
+//    UserDefaults 設定項目等を保存するクラス
+    let userDefaults = UserDefaults.standard
+    
+    var memos = [String]()
+    
+//    var memos=[
+//       "blue","red","pink"
+//    ]
     @IBAction func unwindToMemoList(sender: UIStoryboardSegue){
         guard let sourceVC = sender.source as? MemoViewController, let memo =  sourceVC.memo else{
             return
@@ -22,7 +27,7 @@ class MemoTableViewController: UITableViewController {
         }else{
             self.memos.append(memo)
         }
-        
+        self.userDefaults.set(self.memos, forKey: "memos")
 //        self.memos.append(memo)
         self.tableView.reloadData()
     }
@@ -30,6 +35,13 @@ class MemoTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if self.userDefaults.object(forKey: "memos") != nil{
+            self.memos = self.userDefaults.stringArray(forKey: "memos")!
+        }else{
+            self.memos=["welcome to selvy!"]
+        }
+        self.tableView.reloadData()
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -80,6 +92,7 @@ class MemoTableViewController: UITableViewController {
         if editingStyle == .delete {
             // Delete the row from the data source
             self.memos.remove(at: indexPath.row)
+            self.userDefaults.set(self.memos, forKey: "memos")
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
